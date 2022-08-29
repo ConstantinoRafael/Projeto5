@@ -1,3 +1,5 @@
+let nome = prompt("Qual seu lindo nome?")
+
 let mensagens = [];
 
 function buscarMensagens() {
@@ -5,7 +7,36 @@ function buscarMensagens() {
     promessa.then(renderizarMensagens);
     promessa.catch(mostrarErro);
 
+    scrollMensagens();
+
 }
+
+buscarMensagens();
+
+function enviarNome() {
+    const novoNome = {
+        name: nome
+    }
+    const promessa = axios.post("https://mock-api.driven.com.br/api/v6/uol/participants", novoNome);
+    promessa.then(podeEntrar);
+    promessa.catch(naoEntra);
+}
+
+function enviarMensagem() {
+    const mensagemDigitada = document.querySelector(".enviar-mensagem");
+
+    const novaMensagem = {
+        from: nome,
+        to: "Todos",
+        text: mensagemDigitada.value,
+        type: "message"
+    }
+
+    const promessa = axios.post("https://mock-api.driven.com.br/api/v6/uol/messages", novaMensagem);
+    promessa.then(buscarMensagens());
+    promessa.catch(erroMensagem());
+}
+
 
 function renderizarMensagens(res) {
     mensagens = res.data;
@@ -20,15 +51,6 @@ function renderizarMensagens(res) {
                 ${mensagens[i].text}
             </li>
         `
-        // }
-        // listaMensagens.innerHTML += `
-        //     <li>(${mensagens[i].time})
-        //     ${mensagens[i].from}
-        //     para ${mensagens[i].to}
-        //     ${mensagens[i].text}
-        //     </li>
-        
-        // `
         } else if(mensagens[i].type === "message") {
             listaMensagens.innerHTML += `
             <li class = "todos">
@@ -38,7 +60,7 @@ function renderizarMensagens(res) {
                 ${mensagens[i].text}
             </li>
         `
-        } else {
+        } else if(nome === mensagens[i].to){
             listaMensagens.innerHTML += `
             <li class = "reservadamente">
                 <span class = "tempo">(${mensagens[i].time})</span>
@@ -49,8 +71,28 @@ function renderizarMensagens(res) {
         `
         }
 
+        
+
     }
 
+    
+
+}
+
+function manterConexao() {
+
+    const nomeConexao = {
+        name: nome
+    }
+
+    const promessa = axios.post("https://mock-api.driven.com.br/api/v6/uol/status");
+    promessa.then( enviarNome());
+}
+
+
+function scrollMensagens() {
+    const rolarTela = document.querySelector(".para-scroll");
+    rolarTela.scrollIntoView();
 }
 
 function mostrarErro(err) {
@@ -58,6 +100,23 @@ function mostrarErro(err) {
     console.log(err.responde);
 }
 
+function podeEntrar() {
+    console.log("deu certoo");
+}
+
+function naoEntra() {
+    alert('Esse nome já está em uso, digite outro nome!')
+    document.location.reload(true);
+}
+
+function erroMensagem() {
+    document.location.reload(true);
+}
+
 buscarMensagens();
+
+enviarNome();
+
+
 
 setInterval(buscarMensagens,3000);

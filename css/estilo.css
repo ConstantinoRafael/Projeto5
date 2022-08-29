@@ -1,6 +1,7 @@
 body{
     background-color: #e5e5e5;
     position: relative;
+    word-wrap: break-word;
 }
 
 .topo{
@@ -27,8 +28,15 @@ body{
 }
 
 ul{
+    height: 587px;
     margin-top: 106px;
     font-size: 14px;
+    overflow: scroll;
+}
+
+.para-scroll{
+    width: 375px;
+    height: 80px;
 }
 
 .status{
